@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindOpenForm</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+class QuickFindOpenForm
+{
+    QuickFindMenuItemTable              menuItemTable;
+    QuickFindTextToPrependToFindValue   textToPrependToFindValue;
+
+    str                  keyValue;
+    Common               record;
+
+    menuFunction         menuFunction;
+    menuItemNameDisplay  menuItemNameToOpen;             
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initFromMenuItemTableHelper</Name>
+				<Source><![CDATA[
+    public void initFromMenuItemTableHelper(QuickFindMenuItemTableHelper _menuItemTableHelper)
+    {
+        menuItemTable            = _menuItemTableHelper.parmMenuItemTable();
+        textToPrependToFindValue = _menuItemTableHelper.parmTextToPrependToFindValue();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    public boolean run(str _findValue, boolean _prependText = false)
+    {
+        boolean ret;
+
+        this.setKeyValue(_findValue, _prependText);
+        this.setCommonRecord();
+        
+        if (record)
+        {            
+            this.setMenuItemNameToOpen();
+            if (menuItemNameToOpen)
+            {   
+                menuFunction = new MenuFunction(MenuItemNameToOpen, MenuItemType::Display);
+                if (menuFunction.checkAccessRights())
+                {
+                    this.openForm();
+                    ret = true;
+                }                    
+                else
+                {
+                    ret = checkFailed(strFmt("@SYS105269", curUserId(), MenuItemNameToOpen));
+                }
+            }           
+        }
+        else 
+        {
+            ret = checkFailed(strFmt("@QuickFind:Warning_DoesNotExist", keyValue, menuItemTable.KeyTableName));
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setKeyValue</Name>
+				<Source><![CDATA[
+    protected void setKeyValue(str _findValue, boolean _prependText)
+    {
+        if (_prependText && textToPrependToFindValue)
+        {
+            keyValue = textToPrependToFindValue + _findValue;
+        }        
+        else
+        {
+            keyValue = _findValue;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setCommonRecord</Name>
+				<Source><![CDATA[
+    protected void setCommonRecord()
+    {
+        Map keyMap = new Map(Types::Integer, Types::String);
+        
+        keyMap.insert(menuItemTable.keyFieldId, keyValue);
+        KeyData kd = keyMap.pack();
+        
+        record = SysDictTable::findFromKeyData(menuItemTable.KeyTableId, kd);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setMenuItemNameToOpen</Name>
+				<Source><![CDATA[
+    protected void setMenuItemNameToOpen()
+    {
+        menuItemNameToOpen = menuItemTable.MenuItemName;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>openForm</Name>
+				<Source><![CDATA[
+    protected void openForm()
+    {
+        Args args = new Args();
+        args.record(record);
+        menuFunction.formViewOption(FormViewOption::Details);
+        menuFunction.run(args);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>constructFromTableName</Name>
+				<Source><![CDATA[
+    public static QuickFindOpenForm constructFromTableName(tableName _tableName)
+    {
+        QuickFindOpenForm           quickFindOpenForm;
+        QuickFindTableNameAttribute tableNameAttribute = new QuickFindTableNameAttribute(_tableName);
+ 
+        quickFindOpenForm = SysExtensionAppClassFactory::getClassFromSysAttribute(classStr(QuickFindOpenForm), tableNameAttribute);
+ 
+        return QuickFindOpenForm;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

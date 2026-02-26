@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindOpenForm_ProjJournal</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+[QuickFindTableNameAttribute(tableStr(ProjJournalTable))]
+class QuickFindOpenForm_ProjJournal extends QuickFindOpenForm
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>setMenuItemNameToOpen</Name>
+				<Source><![CDATA[
+    protected void setMenuItemNameToOpen()
+    {
+        ProjJournalTable projJournalTable = record;
+        switch (projJournalTable.JournalType)
+        {
+            case ProjJournalType::Hour :
+                menuItemNameToOpen = menuItemDisplayStr(ProjJournalTableEmpl);
+                break;
+
+            case ProjJournalType::Revenue :
+                menuItemNameToOpen = menuItemDisplayStr(ProjJournalTableRevenue);
+                break;
+
+            case ProjJournalType::BegBalance :
+                menuItemNameToOpen = menuItemDisplayStr(ProjJournalTableBegBal);
+                break;
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>openForm</Name>
+				<Source><![CDATA[
+    protected void openForm()
+    {        
+        Args args = new Args(formStr(ProjJournalTable));
+        args.record(record);
+        FormRun formRun = classFactory.formRunClass(args);;
+               
+        formRun.init();
+        formRun.run();
+        formRun.dataSource(1).findRecord(record);
+        formRun.journalForm().openLinesForm();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

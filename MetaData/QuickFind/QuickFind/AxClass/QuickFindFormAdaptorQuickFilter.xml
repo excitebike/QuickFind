@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindFormAdaptorQuickFilter</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+class QuickFindFormAdaptorQuickFilter
+{
+    QuickFilterControl quickFilterControl;
+    List quickFilterFieldListList    = new List(Types::String);
+    List quickFilterFieldLabelsList  = new List(Types::String);    
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    public void new(QuickFilterControl _quickFilterControl)
+    {
+        quickFilterControl = _quickFilterControl;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init(MenuItemNameDisplay _defaultSelection = '')
+    {
+        QuickFindMenuItemTable menuItemTableTmp = this.populateTmpTable();
+        
+        while select menuItemTableTmp order by translatedLabel
+        {
+            quickFilterFieldListList.addEnd(any2Str(menuItemTableTmp.MenuItemName));
+            quickFilterFieldLabelsList.addEnd(this.buildDetailedLabel(menuItemTableTmp));
+        }
+
+        quickFilterControl.parmFieldList(QuickFilterFieldListList);
+        quickFilterControl.parmFieldLabels(QuickFilterFieldLabelsList);
+
+        this.setDefaultSelection(_defaultSelection);
+
+        quickFilterControl.enabled(true);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>applyFilter</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic ran when a user selects a menu item in the quick filter control
+    /// </summary>
+    /// <param name = "_prependText">Flag to represent if the user wishes to have text prepended to the find value the user has inputted</param>
+    /// <returns>True if the details form opens successfully; false if not</returns>
+    public boolean applyFilter(boolean _prependText = false)
+    {
+        boolean ret;
+
+        str findValue = quickFilterControl.parmFilterValue();
+        
+        QuickFindMenuItemTableHelper menuItemTableHelper = new QuickFindMenuItemTableHelper();
+        menuItemTableHelper.initFromMenuItemName(quickFilterControl.parmFilterField());     
+        
+        QuickFindOpenForm quickFindOpenForm = QuickFindOpenForm::constructFromTableName(menuItemTableHelper.parmMenuItemTable().KeyTableName);
+        quickFindOpenForm.initFromMenuItemTableHelper(menuItemTableHelper);
+        ret = quickFindOpenForm.run(findValue, _prependText);
+
+        if (ret)
+        {
+            quickFilterControl.parmFilterValue('');
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setDefaultSelection</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Sets the default selection in the quick find control if the user has configured on
+    /// </summary>
+    /// <param name = "_defaultSelection">The user's configured default selection</param>
+    protected void setDefaultSelection(MenuItemNameDisplay _defaultSelection)
+    {
+        if (QuickFilterFieldListList.elements() > 0 &&
+            _defaultSelection != '' &&
+            QuickFindMenuItemTableHelper::doesUserHaveAccessToMenuItem(_defaultSelection))
+        {
+            quickFilterControl.parmFilterField(_defaultSelection);
+        }
+        else
+        {
+            //set the default value to the first menu in the filter field list
+            ListEnumerator listEnumerator = QuickFilterFieldListList.getEnumerator();
+            if (listEnumerator)
+            {
+                listEnumerator.moveNext();
+                quickFilterControl.parmFilterField(listEnumerator.current());
+            }
+        }        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>buildDetailedLabel</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Builds a more detailed label for the quick filter control values that will also display the prefix and prepended text associated to the menu item
+    /// </summary>
+    /// <param name = "_menuItemTableTmp">The table buffer to build the detailed label for</param>
+    /// <returns>The concatenated label with the prefx and prepend text values</returns>
+    protected str buildDetailedLabel(QuickFindMenuItemTable _menuItemTableTmp)
+    {
+        str detailedLabel = _menuItemTableTmp.TranslatedLabel;
+
+        if (_menuItemTableTmp.Prefix && _menuItemTableTmp.TextToPrependToFindValue)
+        {
+            detailedLabel = strFmt("%1 - %2 = %3 - %4 = %5",
+                _menuItemTableTmp.TranslatedLabel, "@SYS22501",  _menuItemTableTmp.Prefix, "@QuickFind:PrependText", _menuItemTableTmp.TextToPrependToFindValue);
+        }
+        else if (_menuItemTableTmp.Prefix)
+        {
+            detailedLabel = strFmt("%1 - %2 = %3",_menuItemTableTmp.TranslatedLabel, "@SYS22501", _menuItemTableTmp.Prefix);
+        }
+        else if (_menuItemTableTmp.TextToPrependToFindValue)
+        {
+            detailedLabel = strFmt("%1 - %2 = %3", _menuItemTableTmp.TranslatedLabel, "@QuickFind:PrependText",  _menuItemTableTmp.TextToPrependToFindValue);
+        }
+
+        return detailedLabel;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>populateTmpTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Loops through the menu item table and populates a temp table of menu items a user has access to along with the translated label id.
+    /// The temp table is needed simply to display the menu item in alphabetical order by translated label in the drop down
+    /// </summary>
+    /// <returns>Temp table of menu items user has access to along with their associated properties</returns>
+    protected QuickFindMenuItemTable populateTmpTable()
+    {
+        QuickFindMenuItemTableHelper menuItemTableHelper = new QuickFindMenuItemTableHelper();
+        QuickFindMenuItemTable       menuItemTable, menuItemTableTmp;
+        menuItemTableTmp.setTmp();
+
+        while select menuItemTable
+        {                       
+            if (QuickFindMenuItemTableHelper::doesUserHaveAccessToMenuItem(menuItemTable.MenuItemName))
+            {  
+     
+                menuItemTableTmp.MenuItemName               = menuItemTable.MenuItemName;
+                menuItemTableTmp.TranslatedLabel            = SysLabel::isLabelId(menuItemTable.LabelId) ? SysLabel::labelId2String(menuItemTable.LabelId) : menuItemTable.LabelId;
+
+                //For each menu item a user has access to, determine if there is a user record that overrides the following properties.
+                menuItemTableHelper.initFromMenuItemName(menuItemTable.MenuItemName);
+                menuItemTableTmp.TextToPrependToFindValue = menuItemTableHelper.parmTextToPrependToFindValue();
+                menuItemTableTmp.Prefix                   = menuItemTableHelper.parmPrefix();
+
+                menuItemTableTmp.doInsert();
+            }
+        }
+        return menuItemTableTmp;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

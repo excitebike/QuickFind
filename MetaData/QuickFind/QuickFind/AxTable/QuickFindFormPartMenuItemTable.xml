@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindFormPartMenuItemTable</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+using Microsoft.Dynamics.AX.Metadata.MetaModel;
+public class QuickFindFormPartMenuItemTable extends common
+{
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>modifiedField</Name>
+				<Source><![CDATA[
+    public void modifiedField(FieldId _fieldId)
+    {
+        switch(_fieldId)
+        {
+            case fieldNum(QuickFindFormPartMenuItemTable, MenuItemName):
+                this.initializeFromMenuItemName();
+                break;
+            default:
+                super(_fieldId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initializeFromMenuItemName</Name>
+				<Source><![CDATA[
+    protected void initializeFromMenuItemName()
+    {
+        try
+        {
+            AxMenuItemDisplay menuItem = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenuItemDisplay(this.MenuItemName);
+            this.LabelId = menuItem.Label;
+        }
+        catch
+        {
+            error("@QuickFind:Error_InitMenuItemSetup");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>find</Name>
+				<Source><![CDATA[
+    public static QuickFindFormPartMenuItemTable find(MenuItemName _menuItemName, boolean _forUpdate = false)
+    {
+        QuickFindFormPartMenuItemTable formPartMenuItemTable;
+
+        if (_menuItemName)
+        {
+            if (_forUpdate)
+            {
+                formPartmenuItemTable.selectForUpdate(_forUpdate);
+            }
+
+            select firstonly formPartmenuItemTable
+                where formPartMenuItemTable.MenuItemName == _menuItemName;
+        }
+
+        return formPartMenuItemTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _fieldIdToCheck)
+    {
+        boolean ret;
+    
+        ret = super(_fieldIdToCheck);
+        if (ret)
+        {
+            switch(_fieldIdToCheck)
+            {
+                case fieldNum(QuickFindFormPartMenuItemTable, MenuItemName):
+                    AxMenuItemDisplay menuItem = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenuItemDisplay(this.MenuItemName);
+                    if (!menuItem)
+                    {
+                        ret = checkFailed(strFmt("@QuickFind:Warning_DisplayMenuDoesNotExist", this.MenuItemName));
+                    }
+                    if (ret)
+                    {                           
+                        AxFormDesign formDesign = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetForm(menuItem.Object).Design;
+                        str pattern = formDesign.Pattern;
+                        if (!this.isFormDesignExpected(pattern))
+                        {
+                            ret = Box::yesNo(strFmt("@QuickFind:Warning_WrongDesignPattern", pattern), dialogButton::No);
+                        }
+                    }
+                    break;                    
+            }
+        }
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>isFormDesignExpected</Name>
+				<Source><![CDATA[
+    private boolean isFormDesignExpected(str _pattern)
+    {
+        boolean ret = true;
+
+        if (_pattern != 'FormPartSectionList')
+        {
+            ret = false;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>translateLabel</Name>
+				<Source><![CDATA[
+    [SysClientCacheDataMethodAttribute(true)]
+    display QuickFindRunTimeTranslatedLabel translateLabel()
+    {
+        return SysLabel::labelId2String2(this.LabelId);
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@QuickFind:DD_QuickFindFormPartMenuItemTable</DeveloperDocumentation>
+	<FormRef>QuickFindFormPartMenuItemTable</FormRef>
+	<Label>@QuickFind:QuickFindFormPartMenuItems</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TableGroup>Main</TableGroup>
+	<TitleField1>MenuItemName</TitleField1>
+	<TitleField2>LabelId</TitleField2>
+	<CacheLookup>EntireTable</CacheLookup>
+	<ClusteredIndex>PrimaryIdx</ClusteredIndex>
+	<CreatedBy>Yes</CreatedBy>
+	<CreatedDateTime>Yes</CreatedDateTime>
+	<ModifiedBy>Yes</ModifiedBy>
+	<ModifiedDateTime>Yes</ModifiedDateTime>
+	<PrimaryIndex>PrimaryIdx</PrimaryIndex>
+	<ReplacementKey>PrimaryIdx</ReplacementKey>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>MenuItemName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>LabelId</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>MenuItemName</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>MenuItemName</Name>
+			<AllowEdit>No</AllowEdit>
+			<ExtendedDataType>MenuItemNameDisplay</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>LabelId</Name>
+			<ExtendedDataType>LabelId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TranslatedLabel</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>QuickFindRunTimeTranslatedLabel</ExtendedDataType>
+			<Visible>No</Visible>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>PrimaryIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>MenuItemName</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations />
+	<StateMachines />
+</AxTable>

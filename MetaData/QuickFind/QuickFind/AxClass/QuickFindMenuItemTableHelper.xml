@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindMenuItemTableHelper</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+class QuickFindMenuItemTableHelper
+{
+    QuickFindMenuItemTable              menuItemTable;    
+    QuickFindTextToPrependToFindValue   textToPrependToFindValue;
+    QuickFindPrefix                     prefix;    
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initFromPrefix</Name>
+				<Source><![CDATA[
+    public boolean initFromPrefix(QuickFindPrefix _prefix)
+    {
+        boolean ret;
+        
+        QuickFindMenuItemTable_User menuItemTable_User = QuickFindMenuItemTable_User::findByPrefix(_prefix);
+        if (menuItemTable_User)
+        {
+            textToPrependToFindValue = menuItemTable_User.TextToPrependToFindValue;
+            menuItemTable = quickFindMenuItemTable::find(menuItemTable_User.menuItemName);
+        }
+        else
+        {
+            menuItemTable = quickFindMenuItemTable::findByPrefix(_prefix);
+            if (menuItemTable)
+            {
+                textToPrependToFindValue = menuItemTable.TextToPrependToFindValue;
+            }
+        }
+        if (menuItemTable)
+        {
+            ret = true;
+        }
+        
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromMenuItemName</Name>
+				<Source><![CDATA[
+    public boolean initFromMenuItemName(MenuItemNameDisplay _menuItemName)
+    {
+        boolean ret;
+
+        QuickFindMenuItemTable_User menuItemTable_User = QuickFindMenuItemTable_User::find(_menuItemName);
+        menuItemTable = quickFindMenuItemTable::find(_menuItemName);
+        if (menuItemTable_User)
+        {
+            textToPrependToFindValue = menuItemTable_User.TextToPrependToFindValue;
+            prefix = menuItemTable_User.Prefix;
+        }
+        else
+        {
+            if (menuItemTable)
+            {
+                textToPrependToFindValue = menuItemTable.TextToPrependToFindValue;
+                prefix = menuItemTable.Prefix;
+            }
+        }
+        if (menuItemTable)
+        {
+            ret = true;
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>doesUserHaveAccessToMenuItem</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Helper method to determine if a user has access to a menu item
+    /// </summary>
+    /// <param name = "_displayMenuItemName">The menu item to check access for</param>
+    /// <returns>True if the user has access, false if not</returns>
+    public static boolean doesUserHaveAccessToMenuItem(MenuItemNameDisplay _displayMenuItemName)
+    {
+        boolean ret;
+
+        MenuFunction menuFunction = new MenuFunction(_displayMenuItemName, MenuItemType::Display);
+        if (menuFunction.checkAccessRights())
+        {
+            ret = true;
+        }
+       
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmTextToPrependToFindValue</Name>
+				<Source><![CDATA[
+    public QuickFindTextToPrependToFindValue parmTextToPrependToFindValue(QuickFindTextToPrependToFindValue _textToPrependToFindValue = textToPrependToFindValue)
+    {
+        textToPrependToFindValue = _textToPrependToFindValue;
+
+        return textToPrependToFindValue;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmPrefix</Name>
+				<Source><![CDATA[
+    public QuickFindPrefix parmPrefix(QuickFindPrefix _prefix = prefix)
+    {
+        prefix = _prefix;
+
+        return prefix;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parmMenuItemTable</Name>
+				<Source><![CDATA[
+    public QuickFindMenuItemTable parmMenuItemTable(QuickFindMenuItemTable _menuItemTable = menuItemTable)
+    {
+        menuItemTable = _menuItemTable;
+
+        return menuItemTable;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

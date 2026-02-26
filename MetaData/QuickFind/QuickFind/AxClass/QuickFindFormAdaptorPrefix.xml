@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindFormAdaptorPrefix</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+class QuickFindFormAdaptorPrefix
+{
+    QuickFindPrefix prefix;
+    str             findValue;   
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>modifed</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Logic to run when a "Prefix Find" string control is modified.
+    /// </summary>
+    /// <param name = "_inputValue">The value inputted into the prefix find control</param>
+    /// <param name = "_prefixSeparator">The character to look for that separates the prefix from the value that is attempting to be found</param>
+    /// <param name = "_prependText">Flag to represent if the user wishes to have text prepended to the find value the user has inputted</param>
+    /// <returns>True if the deatils form opens; false if not </returns>
+    public boolean modifed(str _inputValue, quickFindPrefixSeparator _prefixSeparator, boolean _prependText = false)
+    {
+        boolean ret = false;
+
+        prefix      = '';
+        findValue   = '';
+        
+        this.parseInputValue(_inputValue, _prefixSeparator);
+
+        if (prefix && findValue)
+        {
+            QuickFindMenuItemTableHelper menuItemTableHelper = new QuickFindMenuItemTableHelper();
+            if (menuItemTableHelper.initFromPrefix(prefix))
+            {
+                QuickFindOpenForm quickFindOpenForm = QuickFindOpenForm::constructFromTableName(menuItemTableHelper.parmMenuItemTable().KeyTableName);
+                quickFindOpenForm.initFromMenuItemTableHelper(menuItemTableHelper);
+                ret = quickFindOpenForm.run(findValue, _prependText);
+            }
+            else
+            {
+                warning(strFmt("@QuickFind:Warning_NoMenuAssignedToPrefix", prefix));
+            }
+        }
+       
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>parseInputValue</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Parses the inputted text to extract the prefix and find values and saves them to class variables
+    /// </summary>
+    /// <param name = "_inputValue">The value inputted into the prefix find control</param>
+    /// <param name = "_prefixSeparator">The character to look for that separates the prefix from the value that is attempting to be found</param>
+    protected void parseInputValue(str _inputValue, quickFindPrefixSeparator _prefixSeparator)
+    {
+        int separatorPosition = strScan(_inputValue, _prefixSeparator, 1, strLen(_inputValue));
+        if (separatorPosition == 0 && _inputValue != '')
+        {
+            warning(strFmt("@QuickFind:Warning_PrefixSeparatorNotFound", _prefixSeparator, _inputValue));
+        }
+        else
+        {
+            prefix = subStr(_inputValue, 1, separatorPosition - 1);
+            findValue = subStr(_inputValue, separatorPosition + 1, strLen(_inputValue));
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

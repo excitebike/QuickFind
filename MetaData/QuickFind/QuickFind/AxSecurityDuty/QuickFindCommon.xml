@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityDuty xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindCommon</Name>
+	<Label>@QuickFind:Sec_QuickFindCommon</Label>
+	<Privileges>
+		<AxSecurityPrivilegeReference>
+			<Name>QuickFind</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>QuickFindMenuItemTable_User</Name>
+		</AxSecurityPrivilegeReference>
+	</Privileges>
+</AxSecurityDuty>

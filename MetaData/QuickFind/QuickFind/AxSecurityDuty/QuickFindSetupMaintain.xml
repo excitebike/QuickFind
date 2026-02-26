@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxSecurityDuty xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindSetupMaintain</Name>
+	<Label>@QuickFind:Sec_SetupMaintain</Label>
+	<Privileges>
+		<AxSecurityPrivilegeReference>
+			<Name>QuickFindFormPartMenuItemTableMaintain</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>QuickFindGroupMenuItemTableMaintain</Name>
+		</AxSecurityPrivilegeReference>
+		<AxSecurityPrivilegeReference>
+			<Name>QuickFindMenuItemTableMaintain</Name>
+		</AxSecurityPrivilegeReference>
+	</Privileges>
+</AxSecurityDuty>

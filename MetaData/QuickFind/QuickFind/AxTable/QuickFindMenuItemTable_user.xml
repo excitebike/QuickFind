@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindMenuItemTable_user</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+using Microsoft.Dynamics.AX.Metadata.MetaModel;
+public class QuickFindMenuItemTable_User extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initValue</Name>
+				<Source><![CDATA[
+    public void initValue()
+    {
+        super();
+        this.UserId = curUserId();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromMenuItemName</Name>
+				<Source><![CDATA[
+    protected void initFromMenuItemName()
+    {
+        QuickFindMenuItemTable menuItemTable = QuickFindMenuItemTable::find(this.MenuItemName);
+        this.Description              = menuItemTable.Description;  
+        this.Prefix                   = menuItemTable.Prefix;
+        this.TextToPrependToFindValue = menuItemTable.TextToPrependToFindValue;        
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>modifiedField</Name>
+				<Source><![CDATA[
+    public void modifiedField(FieldId _fieldId)
+    {
+        switch(_fieldId)
+        {
+            case fieldNum(QuickFindMenuItemTable_User, MenuItemName):
+                this.initFromMenuItemName();
+                break;
+            default:
+                super(_fieldId);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateWrite</Name>
+				<Source><![CDATA[
+    public boolean validateWrite()
+    {
+        boolean ret;
+    
+        ret = super();
+        //Ensure the entered prefix is not already assigned to a different menu item
+        if (this.Prefix != '')
+        {
+            QuickFindMenuItemTable_User menuItemTable;
+            select firstonly menuItemTable where 
+                menuItemTable.prefix == this.prefix && menuItemTable.MenuItemName != this.MenuItemName &&
+                menuItemTable.UserId == curUserId();
+            if (menuItemTable)
+            {
+                ret = checkFailed(strFmt("@QuickFind:Warning_PrefixAlreadyAssigned", this.Prefix, menuItemTable.MenuItemName));
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>find</Name>
+				<Source><![CDATA[
+    public static QuickFindMenuItemTable_User find(MenuItemName _menuItemName, boolean _forUpdate = false)
+    {
+        QuickFindMenuItemTable_User menuItemTable;
+
+        if (_menuItemName)
+        {
+            if (_forUpdate)
+            {
+                menuItemTable.selectForUpdate(_forUpdate);
+            }
+
+            select firstonly menuItemTable
+                where menuItemTable.MenuItemName == _menuItemName && menuItemTable.userId == curUserId();
+        }
+
+        return menuItemTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>findByPrefix</Name>
+				<Source><![CDATA[
+    static QuickFindMenuItemTable_User findByPrefix(QuickFindPrefix _prefix, boolean _forUpdate = false)
+    {
+        QuickFindMenuItemTable_User menuItemTable;
+
+        if (_prefix)
+        {
+            if (_forUpdate)
+            {
+                menuItemTable.selectForUpdate(_forUpdate);
+            }
+
+            select firstonly menuItemTable
+                index hint PrefixIdx
+                where menuItemTable.Prefix == _prefix && menuItemTable.UserId == curUserId();
+        }
+
+        return menuItemTable;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateField</Name>
+				<Source><![CDATA[
+    public boolean validateField(FieldId _fieldIdToCheck)
+    {
+        boolean ret;
+    
+        ret = super(_fieldIdToCheck);
+
+        if (ret)
+        {
+            switch(_fieldIdToCheck)
+            {
+                case fieldNum(QuickFindMenuItemTable_User, MenuItemName):
+                    if (!QuickFindMenuItemTableHelper::doesUserHaveAccessToMenuItem(this.MenuItemName))
+                    {
+                        ret = checkfailed(strFmt("@SYS105269", curUserId(), this.MenuItemName));
+                    }
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@QuickFind:DD_QuickFindMenuItemTable_User</DeveloperDocumentation>
+	<FormRef>QuickFindMenuItemTable_User</FormRef>
+	<Label>@QuickFind:QuickFindMenuItemTable_User</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TableGroup>Main</TableGroup>
+	<TitleField1>MenuItemName</TitleField1>
+	<CacheLookup>Found</CacheLookup>
+	<CreatedBy>Yes</CreatedBy>
+	<CreatedDateTime>Yes</CreatedDateTime>
+	<ModifiedBy>Yes</ModifiedBy>
+	<ModifiedDateTime>Yes</ModifiedDateTime>
+	<PrimaryIndex>PrimaryIdx</PrimaryIndex>
+	<ReplacementKey>PrimaryIdx</ReplacementKey>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>MenuItemName</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>Description</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>UserId</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>MenuItemName</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Setup</Name>
+			<Label>@SYS26269</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Prefix</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>TextToPrependToFindValue</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>UserId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>UserId</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>MenuItemName</Name>
+			<AllowEdit>No</AllowEdit>
+			<ExtendedDataType>MenuItemNameDisplay</ExtendedDataType>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Description</Name>
+			<ExtendedDataType>Description</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Prefix</Name>
+			<ExtendedDataType>QuickFindPrefix</ExtendedDataType>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>TextToPrependToFindValue</Name>
+			<ExtendedDataType>QuickFindTextToPrependToFindValue</ExtendedDataType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>PrimaryIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>UserId</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>MenuItemName</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+		<AxTableIndex>
+			<Name>PrefixIdx</Name>
+			<AllowDuplicates>Yes</AllowDuplicates>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>UserId</DataField>
+				</AxTableIndexField>
+				<AxTableIndexField>
+					<DataField>Prefix</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations>
+		<AxTableRelation xmlns=""
+			i:type="AxTableRelationForeignKey">
+			<Name>QuickFindMenuItemTable</Name>
+			<Cardinality>ZeroOne</Cardinality>
+			<OnDelete>Cascade</OnDelete>
+			<RelatedTable>QuickFindMenuItemTable</RelatedTable>
+			<RelatedTableCardinality>ExactlyOne</RelatedTableCardinality>
+			<RelationshipType>Association</RelationshipType>
+			<Constraints>
+				<AxTableRelationConstraint xmlns=""
+					i:type="AxTableRelationConstraintField">
+					<Name>MenuItemName</Name>
+					<Field>MenuItemName</Field>
+					<RelatedField>MenuItemName</RelatedField>
+				</AxTableRelationConstraint>
+			</Constraints>
+		</AxTableRelation>
+	</Relations>
+	<StateMachines />
+</AxTable>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxEnum xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindFocusField</Name>
+	<Label>@QuickFind:FocusField</Label>
+	<UseEnumValue>No</UseEnumValue>
+	<EnumValues>
+		<AxEnumValue>
+			<Name>Prefix</Name>
+			<Label>@QuickFInd:PrefixFind</Label>
+			<Value>1</Value>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>QuickFilter</Name>
+			<Label>@QuickFind:QuickFilterFind</Label>
+		</AxEnumValue>
+		<AxEnumValue>
+			<Name>Grid</Name>
+			<Label>@QuickFind:GridFind</Label>
+			<Value>2</Value>
+		</AxEnumValue>
+	</EnumValues>
+	<IsExtensible>true</IsExtensible>
+</AxEnum>

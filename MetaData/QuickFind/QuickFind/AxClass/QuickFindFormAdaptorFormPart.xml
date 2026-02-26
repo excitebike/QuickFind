@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>QuickFindFormAdaptorFormPart</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+//This document is provided “as-is.” Information and views expressed in this document, including URL and other Internet Web site references, may change without notice. You bear the risk of using it.
+//THE SAMPLE CODE AND ANY RELATED INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+//This document does not provide you with any legal rights to any intellectual property in any Microsoft product.
+class QuickFindFormAdaptorFormPart
+{    
+    const str formPartTabPageConstant = 'FormPartTabPage_';
+    const str formPartConstant        = 'FormPart_';
+  
+    FormRun                         formRun;
+    FormTabControl                  formTabControl;
+    FormTabPageControl              defaultFormPartSelection;
+    QuickFindFormPartMenuItemTable  menuItemTableTmp;
+    boolean                         formPartTabPageEnabled;  
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    public void new(FormRun _formRun, FormTabControl _formTabControl)
+    {
+        formRun         = _formRun;
+        formTabControl  = _formTabControl;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init(menuItemNameDisplay _defaultFormPartSelection = '')
+    {
+        menuItemTableTmp = this.populateTmpTable();            
+        
+        if (menuItemTableTmp)
+        {
+            formPartTabPageEnabled = true;
+            
+            while select menuItemTableTmp order by TranslatedLabel
+            {
+                FormTabPageControl formTabPageControl = this.createTabPageControl(menuItemTableTmp);
+               
+                //save default tab page control to a class variable in order to activate the correct form part tab in logic handled by form
+                if (MenuItemTableTmp.MenuItemName == _defaultFormPartSelection)
+                {                    
+                    defaultFormPartSelection = formTabPageControl;
+                    defaultFormPartSelection.autoDeclaration(true);
+                }
+
+                this.addFormPartToTabPage(formTabPageControl, menuItemTableTmp.MenuItemName);
+            }
+        }
+        else
+        {
+            formTabControl.enabled(false);
+            formTabControl.visible(false);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>createTabPageControl</Name>
+				<Source><![CDATA[
+    protected FormTabPageControl createTabPageControl(QuickFindFormPartMenuItemTable _formPartMenuItemTable)
+    {
+        str tabPageControlName = formPartTabPageConstant + _formPartMenuItemTable.MenuItemName;
+        FormTabPageControl formTabPageControl;
+        try
+        {
+            formTabPageControl = formTabControl.addControl(FormControlType::TabPage, tabPageControlName);
+            formTabPageControl.caption(_formPartMenuItemTable.translatedLabel);  
+        }
+        catch
+        {
+            throw error("@QuickFind:Error_UnableToCreateFormPartSection");
+        }
+        
+        return formTabPageControl;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>addFormPartToTabPage</Name>
+				<Source><![CDATA[
+    protected void addFormPartToTabPage(FormTabPageControl _formTabPageControl, MenuItemNameDisplay _formPartMenuItemName)
+    {
+        str formPartControlName = formPartConstant + _formPartMenuItemName;
+        try
+        {
+            FormPartControl formPartControl = _formTabPageControl.addControlEx(classStr(FormPartControl), formPartControlName);
+            FormBuildPartControl formBuildPartControl = formPartControl.build();
+            formBuildPartControl.targetName(_formPartMenuItemName);
+            formBuildPartControl.autoRefreshInterval(0);
+            formBuildPartControl.parmRunMode(FormPartControlRunMode::Remote);
+            formPartControl.applyBuild();
+        }
+        catch 
+        {
+            error(strFmt("@QuickFind:Error_UnableToAddFormPart", _formPartMenuItemName));
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>populateTmpTable</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Loops through the form part menu item table and populates a temp table of menu items a user has access to along with the translated label id.
+    /// The temp table is needed simply to display the form parts in alphabetical order by translated label in the form. 
+    /// </summary>
+    /// <returns>Temp table of form parts a user has access to</returns>
+    protected QuickFindFormPartMenuItemTable populateTmpTable()
+    {
+        QuickFindFormPartMenuItemTable  menuItemTable;
+        menuItemTableTmp.setTmp();
+
+        while select menuItemTable
+        {
+            if (QuickFindMenuItemTableHelper::doesUserHaveAccessToMenuItem(menuItemTable.MenuItemName))
+            {
+                menuItemTableTmp.MenuItemName       = menuItemTable.MenuItemName;
+                menuItemTableTmp.TranslatedLabel    = SysLabel::isLabelId(menuItemTable.LabelId) ? SysLabel::labelId2String(menuItemTable.LabelId) : menuItemTable.LabelId;
+                menuItemTableTmp.doInsert();
+            }
+        }
+
+        return menuItemTableTmp;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>activateDefaultSelectionTabPage</Name>
+				<Source><![CDATA[
+    public void activateDefaultSelectionTabPage()
+    {
+        if (formPartTabPageEnabled && defaultFormPartSelection)
+        {
+            defaultFormPartSelection.activatePage();
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

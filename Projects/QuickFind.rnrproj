@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <BuildTasksDirectory Condition=" '$(BuildTasksDirectory)' == ''">$(MSBuildProgramFiles32)\MSBuild\Microsoft\Dynamics\AX</BuildTasksDirectory>
+    <Model>QuickFind</Model>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <OutputPath>bin</OutputPath>
+    <SchemaVersion>2.0</SchemaVersion>
+    <GenerateCrossReferences>True</GenerateCrossReferences>
+    <RunAppCheckerRules>False</RunAppCheckerRules>
+    <LogAppcheckerDiagsAsErrors>False</LogAppcheckerDiagsAsErrors>
+    <DeployOnline>False</DeployOnline>
+    <ProjectGuid>{3e3b4588-209b-4edb-b1bf-bf825289cc9f}</ProjectGuid>
+    <Name>QuickFind</Name>
+    <RootNamespace>QuickFInd</RootNamespace>
+    <StartupType>Class</StartupType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <Configuration>Debug</Configuration>
+    <DBSyncInBuild>True</DBSyncInBuild>
+    <GenerateFormAdaptors>False</GenerateFormAdaptors>
+    <Company>
+    </Company>
+    <Partition>initial</Partition>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DataEntityExpandParentChildRelations>False</DataEntityExpandParentChildRelations>
+    <DataEntityUseLabelTextAsFieldName>False</DataEntityUseLabelTextAsFieldName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Base Enums\" />
+    <Folder Include="Classes\" />
+    <Folder Include="Display Menu Items\" />
+    <Folder Include="Extended Data Types\" />
+    <Folder Include="Forms\" />
+    <Folder Include="Label Files\" />
+    <Folder Include="Menu Extensions\" />
+    <Folder Include="Security Duties\" />
+    <Folder Include="Security Privileges\" />
+    <Folder Include="Tables\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AxClass\QuickFindFormAdaptorFormPart">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormAdaptorFormPart</Name>
+      <Link>Classes\QuickFindFormAdaptorFormPart</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindFormAdaptorPrefix">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormAdaptorPrefix</Name>
+      <Link>Classes\QuickFindFormAdaptorPrefix</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindFormAdaptorQuickFilter">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormAdaptorQuickFilter</Name>
+      <Link>Classes\QuickFindFormAdaptorQuickFilter</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindInitializeSetupTables">
+      <SubType>Content</SubType>
+      <Name>QuickFindInitializeSetupTables</Name>
+      <Link>Classes\QuickFindInitializeSetupTables</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindMenuItemTableHelper">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTableHelper</Name>
+      <Link>Classes\QuickFindMenuItemTableHelper</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindOpenForm">
+      <SubType>Content</SubType>
+      <Name>QuickFindOpenForm</Name>
+      <Link>Classes\QuickFindOpenForm</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindOpenForm_InventJournal">
+      <SubType>Content</SubType>
+      <Name>QuickFindOpenForm_InventJournal</Name>
+      <Link>Classes\QuickFindOpenForm_InventJournal</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindOpenForm_ProjJournal">
+      <SubType>Content</SubType>
+      <Name>QuickFindOpenForm_ProjJournal</Name>
+      <Link>Classes\QuickFindOpenForm_ProjJournal</Link>
+    </Content>
+    <Content Include="AxClass\QuickFindTableNameAttribute">
+      <SubType>Content</SubType>
+      <Name>QuickFindTableNameAttribute</Name>
+      <Link>Classes\QuickFindTableNameAttribute</Link>
+    </Content>
+    <Content Include="AxEdt\QuickFindFocusFieldType">
+      <SubType>Content</SubType>
+      <Name>QuickFindFocusFieldType</Name>
+      <Link>Extended Data Types\QuickFindFocusFieldType</Link>
+    </Content>
+    <Content Include="AxEdt\QuickFindGroupId">
+      <SubType>Content</SubType>
+      <Name>QuickFindGroupId</Name>
+      <Link>Extended Data Types\QuickFindGroupId</Link>
+    </Content>
+    <Content Include="AxEdt\QuickFindPrefix">
+      <SubType>Content</SubType>
+      <Name>QuickFindPrefix</Name>
+      <Link>Extended Data Types\QuickFindPrefix</Link>
+    </Content>
+    <Content Include="AxEdt\QuickFindPrefixSeparator">
+      <SubType>Content</SubType>
+      <Name>QuickFindPrefixSeparator</Name>
+      <Link>Extended Data Types\QuickFindPrefixSeparator</Link>
+    </Content>
+    <Content Include="AxEdt\QuickFindRunTimeTranslatedLabel">
+      <SubType>Content</SubType>
+      <Name>QuickFindRunTimeTranslatedLabel</Name>
+      <Link>Extended Data Types\QuickFindRunTimeTranslatedLabel</Link>
+    </Content>
+    <Content Include="AxEdt\QuickFindTextToPrependToFindValue">
+      <SubType>Content</SubType>
+      <Name>QuickFindTextToPrependToFindValue</Name>
+      <Link>Extended Data Types\QuickFindTextToPrependToFindValue</Link>
+    </Content>
+    <Content Include="AxEnum\QuickFindFocusField">
+      <SubType>Content</SubType>
+      <Name>QuickFindFocusField</Name>
+      <Link>Base Enums\QuickFindFocusField</Link>
+    </Content>
+    <Content Include="AxForm\QuickFind">
+      <SubType>Content</SubType>
+      <Name>QuickFind</Name>
+      <Link>Forms\QuickFind</Link>
+    </Content>
+    <Content Include="AxForm\QuickFindFormPartMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormPartMenuItemTable</Name>
+      <Link>Forms\QuickFindFormPartMenuItemTable</Link>
+    </Content>
+    <Content Include="AxForm\QuickFindMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable</Name>
+      <Link>Forms\QuickFindMenuItemTable</Link>
+    </Content>
+    <Content Include="AxForm\QuickFindMenuItemTable_User">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable_User</Name>
+      <Link>Forms\QuickFindMenuItemTable_User</Link>
+    </Content>
+    <Content Include="AxLabelFile\QuickFind_en-US">
+      <SubType>Content</SubType>
+      <Name>QuickFind_en-US</Name>
+      <Link>Label Files\QuickFind_en-US</Link>
+    </Content>
+    <Content Include="AxMenuExtension\CommonMenu.QuickFind">
+      <SubType>Content</SubType>
+      <Name>CommonMenu.QuickFind</Name>
+      <Link>Menu Extensions\CommonMenu.QuickFind</Link>
+    </Content>
+    <Content Include="AxMenuExtension\SystemAdministration.QuickFind">
+      <SubType>Content</SubType>
+      <Name>SystemAdministration.QuickFind</Name>
+      <Link>Menu Extensions\SystemAdministration.QuickFind</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\QuickFind">
+      <SubType>Content</SubType>
+      <Name>QuickFind</Name>
+      <Link>Display Menu Items\QuickFind</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\QuickFindFormPartMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormPartMenuItemTable</Name>
+      <Link>Display Menu Items\QuickFindFormPartMenuItemTable</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\QuickFindGroupMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindGroupMenuItemTable</Name>
+      <Link>Display Menu Items\QuickFindGroupMenuItemTable</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\QuickFindMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable</Name>
+      <Link>Display Menu Items\QuickFindMenuItemTable</Link>
+    </Content>
+    <Content Include="AxMenuItemDisplay\QuickFindMenuItemTable_User">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable_User</Name>
+      <Link>Display Menu Items\QuickFindMenuItemTable_User</Link>
+    </Content>
+    <Content Include="AxSecurityDuty\QuickFindCommon">
+      <SubType>Content</SubType>
+      <Name>QuickFindCommon</Name>
+      <Link>Security Duties\QuickFindCommon</Link>
+    </Content>
+    <Content Include="AxSecurityDuty\QuickFindSetupMaintain">
+      <SubType>Content</SubType>
+      <Name>QuickFindSetupMaintain</Name>
+      <Link>Security Duties\QuickFindSetupMaintain</Link>
+    </Content>
+    <Content Include="AxSecurityDuty\QuickFindSetupView">
+      <SubType>Content</SubType>
+      <Name>QuickFindSetupView</Name>
+      <Link>Security Duties\QuickFindSetupView</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\QuickFind">
+      <SubType>Content</SubType>
+      <Name>QuickFind</Name>
+      <Link>Security Privileges\QuickFind</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\QuickFindFormPartMenuItemTableMaintain">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormPartMenuItemTableMaintain</Name>
+      <Link>Security Privileges\QuickFindFormPartMenuItemTableMaintain</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\QuickFindFormPartMenuItemTableView">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormPartMenuItemTableView</Name>
+      <Link>Security Privileges\QuickFindFormPartMenuItemTableView</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\QuickFindMenuItemTableMaintain">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTableMaintain</Name>
+      <Link>Security Privileges\QuickFindMenuItemTableMaintain</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\QuickFindMenuItemTableView">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTableView</Name>
+      <Link>Security Privileges\QuickFindMenuItemTableView</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\QuickFindMenuItemTable_User">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable_User</Name>
+      <Link>Security Privileges\QuickFindMenuItemTable_User</Link>
+    </Content>
+    <Content Include="AxTable\QuickFindFormPartMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindFormPartMenuItemTable</Name>
+      <Link>Tables\QuickFindFormPartMenuItemTable</Link>
+    </Content>
+    <Content Include="AxTable\QuickFindMenuItemTable">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable</Name>
+      <Link>Tables\QuickFindMenuItemTable</Link>
+    </Content>
+    <Content Include="AxTable\QuickFindMenuItemTable_user">
+      <SubType>Content</SubType>
+      <Name>QuickFindMenuItemTable_user</Name>
+      <Link>Tables\QuickFindMenuItemTable_user</Link>
+    </Content>
+    <Content Include="QuickFind.en-US.label.txt">
+      <SubType>Content</SubType>
+      <Name>QuickFind.en-US.label.txt</Name>
+      <DependentUpon>AxLabelFile\QuickFind_en-US</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
+  <Import Project="$(BuildTasksDirectory)\Microsoft.Dynamics.Framework.Tools.BuildTasks.17.0.targets" />
+</Project>

@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxForm xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="Microsoft.Dynamics.AX.Metadata.V6">
+	<Name>QuickFind</Name>
+	<SourceCode>
+		<Methods xmlns="">
+			<Method>
+				<Name>classDeclaration</Name>
+				<Source><![CDATA[
+    [Form]
+public class QuickFind extends FormRun
+{
+    QuickFindFormAdaptorQuickFilter     quickFilterAdaptor;
+    QuickFindFormAdaptorPrefix          prefixAdaptor;
+    QuickFindFormAdaptorFormPart        formPartAdaptor;
+}
+]]></Source>
+			</Method>
+			<Method>
+				<Name>init</Name>
+				<Source><![CDATA[
+    public void init()
+    {
+        this.setDisplayTarget(FormDisplayTarget::AsidePane);
+        
+        super();
+        
+        element.preValidation();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>preValidation</Name>
+				<Source><![CDATA[
+    public void preValidation()
+    {
+        QuickFindMenuItemTable menuItemTable;
+
+        select firstonly RecId from menuItemTable;
+        if (!menuItemTable)
+        {
+            throw error("@QuickFind:Error_NoQuickFindMenuItemRecord");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>run</Name>
+				<Source><![CDATA[
+    public void run()
+    {
+        element.loadLastValues();
+
+        quickFilterAdaptor = new QuickFindFormAdaptorQuickFilter(QuickFilterControl);
+        quickFilterAdaptor.init(defaultQuickFilterSelection.valueStr());
+             
+        prefixAdaptor = new QuickFindFormAdaptorPrefix();
+
+        formPartAdaptor = new QuickFindFormAdaptorFormPart(this, FormPartTabControlTOC);
+        formPartAdaptor.init(defaultFormPartSelection.valueStr());
+            
+        super();
+
+        this.design().viewEditMode(ViewEditMode::Edit);  
+          
+        this.setFocusField();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setFocusField</Name>
+				<Source><![CDATA[
+    public void setFocusField()
+    {
+        formPartAdaptor.activateDefaultSelectionTabPage();
+        switch(focusField.selection())
+        {
+            case QuickFindFocusField::Prefix :
+                Prefix.setFocus();
+                break;
+            case QuickFindFocusField::QuickFilter :
+                QuickFilterControl.setFocus();
+                break;
+            case QuickFindFocusField::Grid :
+                formPartAdaptor.activateDefaultSelectionTabPage();
+                break;
+            default:
+                Prefix.setFocus();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>close</Name>
+				<Source><![CDATA[
+    public void close()
+    {   
+        super();
+        element.saveLastValues();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>saveLastValues</Name>
+				<Source><![CDATA[
+    public void saveLastValues()
+    {
+        xSysLastValue::putValue([PrependText.checked(), 
+                                FocusField.selection(), 
+                                PrefixSeparator.valueStr(), 
+                                DefaultQuickFilterSelection.valueStr()],
+                                curext(), curUserId(), UtilElementType::Form, form.name());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>loadLastValues</Name>
+				<Source><![CDATA[
+    public void loadLastValues()
+    {
+        container lastValues = xSysLastValue::getValue(curext(), curuserid(), UtilElementType::Form, Form.name());
+        if (conLen(lastValues) > 0)
+        {
+            PrependText.checked(conPeek(lastValues, 1));
+            FocusField.selection(conPeek(lastValues, 2));
+            PrefixSeparator.text(conPeek(lastValues, 3));
+            DefaultQuickFilterSelection.text(conPeek(lastValues, 4));
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+		<DataSources xmlns="" />
+		<DataControls xmlns="">
+			<Control>
+				<Name>Prefix</Name>
+				<Type>String</Type>
+				<Methods>
+					<Method>
+						<Name>modified</Name>
+						<Source><![CDATA[
+        public boolean modified()
+        {
+            boolean ret;
+
+            QuickFindPrefixSeparator separator = (PrefixSeparator.valueStr() == '' || prefixSeparator.valueStr() == ' ') ? ' ' : PrefixSeparator.valueStr();
+            if (prefixAdaptor.modifed(this.valueStr(), separator, PrependText.checked()))
+            {
+                this.text('');
+            }
+
+            ret = super();
+
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>leave</Name>
+						<Source><![CDATA[
+        public boolean leave()
+        {
+            boolean ret;  
+      
+            ret = super();
+
+            this.text('');
+                    
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>QuickFilterControl</Name>
+				<Type>Custom</Type>
+				<Methods>
+					<Method>
+						<Name>applyFilter</Name>
+						<Source><![CDATA[
+        public void applyFilter()
+        {
+            //override default super call
+            //super();
+            quickFilterAdaptor.applyFilter(PrependText.checked());
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+			<Control>
+				<Name>DefaultQuickFilterSelection</Name>
+				<Type>String</Type>
+				<Methods>
+					<Method>
+						<Name>lookup</Name>
+						<Source><![CDATA[
+        public void lookup()
+        {
+            SysTableLookup          sysTableLookup  = SysTableLookup::newParameters(tableNum(QuickFindMenuItemTable), this);
+            Query                   query = new Query();
+            QueryBuildDataSource    qbds = query.addDataSource(tableNum(QuickFindMenuItemTable));
+        
+            QuickFindMenuItemTable  menuItemTable;
+            while select menuItemTable
+            {
+                if (QuickFindMenuItemTableHelper::doesUserHaveAccessToMenuItem(menuItemTable.menuItemName))
+                {
+                    qbds.addRange(fieldNum(QuickFindMenuItemTable, MenuItemName)).value(menuItemTable.MenuItemName);
+                }
+            }
+            sysTableLookup.parmQuery(query);
+            sysTableLookup.addLookupfield(fieldNum(QuickFindMenuItemTable, menuItemName));
+            SysTableLookup.addLookupmethod(tableMethodStr(QuickFindMenuItemTable, translatelabel));
+            sysTableLookup.performFormLookup();
+        }
+
+]]></Source>
+					</Method>
+					<Method>
+						<Name>validate</Name>
+						<Source><![CDATA[
+        public boolean validate()
+        {
+            boolean ret;
+        
+            ret = super();
+
+            if (this.valueStr())
+            {
+                if (!QuickFindMenuItemTable::find(this.valueStr()))
+                {
+                    ret = checkFailed(strFmt("@QuickFind:Warning_MenuItemNotConfigured", this.valueStr()));
+                }
+                if (ret && !QuickFindMenuItemTableHelper::doesUserHaveAccessToMenuItem(this.valueStr()))
+                {
+                    ret = checkfailed(strFmt("@SYS105269", curUserId(), this.valueStr()));
+                }
+            }
+        
+            return ret;
+        }
+
+]]></Source>
+					</Method>
+				</Methods>
+			</Control>
+		</DataControls>
+		<Members xmlns="" />
+	</SourceCode>
+	<DataSources />
+	<Design>
+		<Caption xmlns="">@QuickFind:QuickFind</Caption>
+		<DialogSize xmlns="">Medium</DialogSize>
+		<Pattern xmlns="">Custom</Pattern>
+		<ShowDeleteButton xmlns="">No</ShowDeleteButton>
+		<ShowNewButton xmlns="">No</ShowNewButton>
+		<Style xmlns="">Dialog</Style>
+		<WorkflowType xmlns="">ContentPage</WorkflowType>
+		<Controls xmlns="">
+			<AxFormControl xmlns=""
+				i:type="AxFormActionPaneControl">
+				<Name>FormActionPaneControl</Name>
+				<Type>ActionPane</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls />
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormGroupControl">
+				<Name>HeaderGroup</Name>
+				<Type>Group</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>InputGroup</Name>
+						<Type>Group</Type>
+						<WidthMode>SizeToAvailable</WidthMode>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>Prefix</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Label>@QuickFind:PrefixFind</Label>
+							</AxFormControl>
+							<AxFormControl>
+								<Name>QuickFilterControl</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<FormControlExtension>
+									<Name>QuickFilterControl</Name>
+									<ExtensionComponents />
+									<ExtensionProperties>
+										<AxFormControlExtensionProperty>
+											<Name>targetControlName</Name>
+											<Type>String</Type>
+										</AxFormControlExtensionProperty>
+										<AxFormControlExtensionProperty>
+											<Name>defaultColumnName</Name>
+											<Type>String</Type>
+										</AxFormControlExtensionProperty>
+										<AxFormControlExtensionProperty>
+											<Name>placeholderText</Name>
+											<Type>String</Type>
+											<Value>Find</Value>
+										</AxFormControlExtensionProperty>
+									</ExtensionProperties>
+								</FormControlExtension>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS30311</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>Preferences</Name>
+						<Type>Group</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormComboBoxControl">
+								<Name>FocusField</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>ComboBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<ExtendedDataType>QuickFindFocusFieldType</ExtendedDataType>
+								<Label>@QuickFInd:FocusField</Label>
+								<Items />
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormCheckBoxControl">
+								<Name>PrependText</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>CheckBox</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Label>@QuickFind:PrependText</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>DefaultQuickFilterSelection</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Label>@QuickFind:DefaultQuickFilterSelection</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>DefaultFormPartSelection</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Label>@QuickFind:DefaultGridSelection</Label>
+							</AxFormControl>
+							<AxFormControl xmlns=""
+								i:type="AxFormStringControl">
+								<Name>PrefixSeparator</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Type>String</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<ExtendedDataType>QuickFindPrefixSeparator</ExtendedDataType>
+							</AxFormControl>
+						</Controls>
+						<Columns>3</Columns>
+						<Caption>@ApplicationFoundation:SysUserSetup_GeneralTab</Caption>
+					</AxFormControl>
+					<AxFormControl xmlns=""
+						i:type="AxFormGroupControl">
+						<Name>Links</Name>
+						<Type>Group</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormMenuFunctionButtonControl">
+								<Name>QuickFindMenuItemTable_User</Name>
+								<Type>MenuFunctionButton</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<MenuItemName>QuickFindMenuItemTable_User</MenuItemName>
+								<Style>Link</Style>
+								<Text>@QuickFind:QuickFindMenuItemTable_User</Text>
+							</AxFormControl>
+						</Controls>
+						<Caption>@SYS72248</Caption>
+					</AxFormControl>
+				</Controls>
+				<ArrangeMethod>Auto</ArrangeMethod>
+				<ViewEditMode>Edit</ViewEditMode>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>FormPartTabControl</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<HeightMode>SizeToContent</HeightMode>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls>
+					<AxFormControl xmlns=""
+						i:type="AxFormTabPageControl">
+						<Name>FormPartTableOfContents</Name>
+						<Pattern>SectionTabbedList</Pattern>
+						<PatternVersion>1.1</PatternVersion>
+						<Type>TabPage</Type>
+						<FormControlExtension
+							i:nil="true" />
+						<Controls>
+							<AxFormControl xmlns=""
+								i:type="AxFormTabControl">
+								<Name>FormPartTabControlTOC</Name>
+								<AutoDeclaration>Yes</AutoDeclaration>
+								<Height>500</Height>
+								<HeightMode>Manual</HeightMode>
+								<Type>Tab</Type>
+								<FormControlExtension
+									i:nil="true" />
+								<Controls />
+								<ArrangeMethod>Vertical</ArrangeMethod>
+								<Style>VerticalTabs</Style>
+							</AxFormControl>
+						</Controls>
+						<Caption>@QuickFind:GridFind</Caption>
+						<FastTabExpanded>Yes</FastTabExpanded>
+					</AxFormControl>
+				</Controls>
+				<Style>FastTabs</Style>
+			</AxFormControl>
+			<AxFormControl xmlns=""
+				i:type="AxFormTabControl">
+				<Name>TabPageGroupTabControl</Name>
+				<AutoDeclaration>Yes</AutoDeclaration>
+				<HeightMode>SizeToContent</HeightMode>
+				<Type>Tab</Type>
+				<FormControlExtension
+					i:nil="true" />
+				<Controls />
+				<Style>FastTabs</Style>
+			</AxFormControl>
+		</Controls>
+	</Design>
+	<Parts />
+</AxForm>
