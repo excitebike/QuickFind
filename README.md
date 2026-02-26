@@ -52,3 +52,8 @@ Each organization defines what menu items are available by populating a new setu
 Main execution logic. 
 <img width="1016" height="1173" alt="image" src="https://github.com/user-attachments/assets/f2710fe3-6983-4cdc-89aa-ee1ec57f162d" />
 
+# Legal
+
+This code is provided 'as is' with no additional support or guarantee.  Use at own risk.  MIT License.
+
+
